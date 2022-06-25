@@ -32,7 +32,7 @@ let createOffer = async () => {
   document.getElementById('user-2').srcObject = remoteStream
 
   //add local stream audioand video tracks to peer connection
-  localStream.getTrack().forEach((track) => {
+  localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream)
   });
 
@@ -40,6 +40,14 @@ let createOffer = async () => {
     evt.streans[0].getTracks().forEach((track) => {
       remoteStream.addTrack(track)
     })
+  }
+
+  peerConnection.onicecandidate = async (evt) => {
+   // check if ICE candidate exists
+    if(evt.candidate){
+      //once a candidate is generated update the offer (which is set as localDescription)
+      document.getElementById('offer-sdp').value = JSON.stringify(peerConnection.localDescription)
+    }
   }
 
   //create sdp offer for peer connection
